@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Sidebar } from "@/components/SideBarNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,8 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang='en'>
+      <body className={`bg-gray-50 ${inter.className}`}>
+        <Sidebar/>
+        <main className='mx-5 mt-16 sm:ml-[300px] sm:mt-3'>{children}</main>
+      </body>
     </html>
   );
 }
