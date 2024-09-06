@@ -6,6 +6,7 @@ export default function settings () {
     <div>
       Settings
       <Button className="rounded-full">Change Password</Button>
+      <span>Please type here</span>
       <Input></Input>
     </div>
   )
