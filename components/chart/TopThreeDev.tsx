@@ -1,6 +1,6 @@
 "use client"
 
-import chartData from "@/data/chartData.json"
+import chartData from "@/data/lineAddDel.json"
 import * as React from "react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
@@ -24,24 +24,24 @@ const chartConfig = {
   views: {
     label: "Page Views",
   },
-  desktop: {
+  addition: {
     label: "Adition (+)",
-    color: "hsl(var(--chart-1))",
+    color: "#00AC4F",
   },
-  mobile: {
+  deletion: {
     label: "Deletion (-)",
-    color: "hsl(var(--chart-2))",
+    color: "#FF6B6B",
   },
 } satisfies ChartConfig
 
-export function Dev() {
+export function TopThreeDev() {
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>("desktop")
+    React.useState<keyof typeof chartConfig>("addition")
 
   const total = React.useMemo(
     () => ({
-      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
-      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0),
+      addition: chartData.reduce((acc, curr) => acc + curr.addition, 0),
+      deletion: chartData.reduce((acc, curr) => acc + curr.deletion, 0),
     }),
     []
   )
@@ -61,7 +61,7 @@ export function Dev() {
           </div>
         </div>
         <div className="flex">
-          {["desktop", "mobile"].map((key) => {
+          {["addition", "deletion"].map((key) => {
             const chart = key as keyof typeof chartConfig
             return (
               <button
