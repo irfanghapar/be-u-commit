@@ -37,38 +37,73 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const data: Payment[] = [
+const data: topTen[] = [
   {
     "id": "m5gr84i9",
-    "amount": 316,
+    "progress": 90,
     "addition": 101,
     "email": "ken99@yahoo.com",
     "deletion": 1000
   },
   {
     "id": "3u1reuv4",
-    "amount": 242,
+    "progress": 10,
     "addition": 102,
     "email": "Abe45@gmail.com",
     "deletion": 100
   },
   {
     "id": "derv1ws0",
-    "amount": 837,
+    "progress": 1,
     "addition": 103,
     "email": "Monserrat44@gmail.com",
     "deletion": 400
   },
   {
     "id": "5kma53ae",
-    "amount": 874,
+    "progress": 22,
     "addition": 104,
     "email": "Silas22@gmail.com",
     "deletion": 300
   },
   {
     "id": "bhqecj4p",
-    "amount": 721,
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
     "addition": 105,
     "email": "carmella@hotmail.com",
     "deletion": 120
@@ -76,15 +111,15 @@ const data: Payment[] = [
 ]
 
 
-export type Payment = {
+export type topTen = {
   id: string
-  amount: number
+  progress: number
   addition: number
   deletion: number
   email: string
 }
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<topTen>[] = [
   {
     accessorKey: "No",
     header: "No",
@@ -101,6 +136,7 @@ export const columns: ColumnDef<Payment>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left -ml-2 pl-2"
         >
           Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -116,35 +152,38 @@ export const columns: ColumnDef<Payment>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="mr-4"
-        >
-          Addition
+          className="text-left -ml-2 pl-2"
+          >
+          Lines of Code Added
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div>{row.getValue("addition")}</div>,
+    cell: ({ row }) => <div className="text-green font-medium">+{row.getValue("addition")}</div>,
   },
   {
     accessorKey: "deletion",
-    header: "Deletion",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("deletion")}</div>
-    ),
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left -ml-2 pl-2"
+        >
+          Lines of Code Deleted
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div className="text-red font-medium">-{row.getValue("deletion")}</div>,
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "progress",
+    header: () => <div className="text-left">Progress</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
+      const progress = parseFloat(row.getValue("progress"))
 
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
-
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-left pr-0 font-medium">%{progress}</div>
     },
   },
   {
@@ -285,7 +324,7 @@ export function TopTenTable() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody >
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
