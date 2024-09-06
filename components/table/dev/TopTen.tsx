@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Eye } from "lucide-react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -38,73 +39,60 @@ import {
 
 const data: Payment[] = [
   {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
+    "id": "m5gr84i9",
+    "amount": 316,
+    "addition": 101,
+    "email": "ken99@yahoo.com",
+    "deletion": 1000
   },
   {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
+    "id": "3u1reuv4",
+    "amount": 242,
+    "addition": 102,
+    "email": "Abe45@gmail.com",
+    "deletion": 100
   },
   {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
+    "id": "derv1ws0",
+    "amount": 837,
+    "addition": 103,
+    "email": "Monserrat44@gmail.com",
+    "deletion": 400
   },
   {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
+    "id": "5kma53ae",
+    "amount": 874,
+    "addition": 104,
+    "email": "Silas22@gmail.com",
+    "deletion": 300
   },
   {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
-  },
+    "id": "bhqecj4p",
+    "amount": 721,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  }
 ]
+
 
 export type Payment = {
   id: string
   amount: number
-  status: "pending" | "processing" | "success" | "failed"
+  addition: number
+  deletion: number
   email: string
 }
 
 export const columns: ColumnDef<Payment>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
+    accessorKey: "No",
+    header: "No",
+    cell: ({ row }) => {
+      // Get the index of the row and format it
+      const index = row.index + 1;
+      return <div>{index.toString().padStart(2, '0')}</div>;
+    },
   },
   {
     accessorKey: "email",
@@ -120,6 +108,29 @@ export const columns: ColumnDef<Payment>[] = [
       )
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
+    accessorKey: "addition",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="mr-4"
+        >
+          Addition
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div>{row.getValue("addition")}</div>,
+  },
+  {
+    accessorKey: "deletion",
+    header: "Deletion",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("deletion")}</div>
+    ),
   },
   {
     accessorKey: "amount",
@@ -164,6 +175,27 @@ export const columns: ColumnDef<Payment>[] = [
         </DropdownMenu>
       )
     },
+  },
+  {
+    id: "select",
+    header: "Actions",
+    cell: ({ row }) => {
+      const handleViewProfile = () => {
+        console.log(`View developer profile for ID: ${row.original.id}`);
+      };
+
+      return (
+        <Button
+          onClick={handleViewProfile}
+          aria-label="View Developer"
+          className="bg-white border hover:bg-primary hover:text-white"
+        ><Eye className="h-4 w-4" /> 
+          <span className="ml-1">View</span> 
+        </Button>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
   },
 ]
 
@@ -233,14 +265,14 @@ export function TopTenTable() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-hidden">
         <Table className="bg-white rounded-md">
-          <TableHeader className="">
+          <TableHeader className="bg-primary text-white">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow className="rounded" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead className="text-white" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -285,8 +317,7 @@ export function TopTenTable() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          <span className="text-xs">Click View to see developer profile</span>
         </div>
         <div className="space-x-2">
           <Button
