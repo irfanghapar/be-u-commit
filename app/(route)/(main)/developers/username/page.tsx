@@ -14,7 +14,7 @@ export default function Username() {
           <RepoCard/>
         </div>
       </div>
-      <h1 className="my-6 text-xl font-bold text-black px-4">Activity Calendar</h1>
+      <h1 className="my-6 text-xl font-bold text-black px-4">Activity Calendar Hello</h1>
     </div>
   )
 }
