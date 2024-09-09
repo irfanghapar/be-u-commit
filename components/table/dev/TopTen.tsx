@@ -36,6 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import router from "next/router"
 
 const data: topTen[] = [
   {
@@ -220,7 +221,9 @@ export const columns: ColumnDef<topTen>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const handleViewProfile = () => {
-        console.log(`View developer profile for ID: ${row.original.id}`);
+        const email = row.getValue("email") as string;
+        const username = email.split('@')[0]; 
+        router.push(`/developers/${username}`);
       };
 
       return (
@@ -267,43 +270,46 @@ export function TopTenTable() {
   })
 
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+    <div className="bg-white shadow-sm rounded-lg p-6 w-full mb-8 border">
+        <div className="flex flex-col md:flex-row justify-between md:items-center pt-2 pb-4 space-y-4 md:space-y-0">
+          <h2 className="text-xl font-bold text-black">Top Ten Developers</h2>
+          <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-2 w-full md:w-auto">
+            <Input
+              placeholder="Filter emails..."
+              value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+              onChange={(event) =>
+                table.getColumn("email")?.setFilterValue(event.target.value)
+              }
+              className="w-auto md:w-80"
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full md:w-auto">
+                  Columns <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
       <div className="rounded-md border overflow-hidden">
         <Table className="bg-white rounded-md">
           <TableHeader className="bg-primary text-white">
@@ -354,7 +360,7 @@ export function TopTenTable() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 pt-4">
         <div className="flex-1 text-sm text-muted-foreground">
           <span className="text-xs">Click View to see developer profile</span>
         </div>

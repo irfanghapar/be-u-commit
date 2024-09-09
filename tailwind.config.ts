@@ -29,7 +29,9 @@ const config = {
         third: "#FFEAF2", // white
         fourth: "#DB4884", // pink
         black: "#161B22",
-        green: "#00AC4F",
+        green: "#00D68F",
+        lightGreen: "#E9FFE7",
+        darkGreen: "#00A86B",
         red: "#FF6B6B",
         destructive: {
           DEFAULT: "hsl(var(--destructive))",

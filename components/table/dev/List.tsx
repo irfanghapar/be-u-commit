@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Eye } from "lucide-react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -35,76 +36,99 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import router from "next/router"
 
-const data: Payment[] = [
+const data: topTen[] = [
   {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@yahoo.com",
+    "id": "m5gr84i9",
+    "progress": 90,
+    "addition": 101,
+    "email": "ken99@yahoo.com",
+    "deletion": 1000
   },
   {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@gmail.com",
+    "id": "3u1reuv4",
+    "progress": 10,
+    "addition": 102,
+    "email": "Abe45@gmail.com",
+    "deletion": 100
   },
   {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@gmail.com",
+    "id": "derv1ws0",
+    "progress": 1,
+    "addition": 103,
+    "email": "Monserrat44@gmail.com",
+    "deletion": 400
   },
   {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@gmail.com",
+    "id": "5kma53ae",
+    "progress": 22,
+    "addition": 104,
+    "email": "Silas22@gmail.com",
+    "deletion": 300
   },
   {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@hotmail.com",
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
   },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  },
+  {
+    "id": "bhqecj4p",
+    "progress": 54,
+    "addition": 105,
+    "email": "carmella@hotmail.com",
+    "deletion": 120
+  }
 ]
 
-export type Payment = {
+
+export type topTen = {
   id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
+  progress: number
+  addition: number
+  deletion: number
   email: string
 }
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<topTen>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
+    accessorKey: "No",
+    header: "No",
+    cell: ({ row }) => {
+      // Get the index of the row and format it
+      const index = row.index + 1;
+      return <div>{index.toString().padStart(2, '0')}</div>;
+    },
   },
   {
     accessorKey: "email",
@@ -113,6 +137,7 @@ export const columns: ColumnDef<Payment>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left -ml-2 pl-2"
         >
           Email
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -122,18 +147,44 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "addition",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left -ml-2 pl-2"
+          >
+          Lines of Code Added
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div className="text-green font-medium">+{row.getValue("addition")}</div>,
+  },
+  {
+    accessorKey: "deletion",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left -ml-2 pl-2"
+        >
+          Lines of Code Deleted
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div className="text-red font-medium">-{row.getValue("deletion")}</div>,
+  },
+  {
+    accessorKey: "progress",
+    header: () => <div className="text-left">Progress</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
+      const progress = parseFloat(row.getValue("progress"))
 
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
-
-      return <div className="text-right font-medium">{formatted}</div>
+      return <div className="text-left pr-0 font-medium">%{progress}</div>
     },
   },
   {
@@ -164,6 +215,29 @@ export const columns: ColumnDef<Payment>[] = [
         </DropdownMenu>
       )
     },
+  },
+  {
+    id: "select",
+    header: "Actions",
+    cell: ({ row }) => {
+      const handleViewProfile = () => {
+        const email = row.getValue("email") as string;
+          const username = email.split('@')[0]; 
+          router.push(`/developers/${username}`);
+      };
+
+      return (
+        <Button
+          onClick={handleViewProfile}
+          aria-label="View Developer"
+          className="bg-white border hover:bg-primary hover:text-white"
+        ><Eye className="h-4 w-4" /> 
+          <span className="ml-1">View</span> 
+        </Button>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
   },
 ]
 
@@ -196,51 +270,54 @@ export function DevList() {
   })
 
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
+    <div className="bg-white shadow-sm rounded-lg p-6 w-full mb-8 border">
+        <div className="flex flex-col md:flex-row justify-between md:items-center pt-2 pb-4 space-y-4 md:space-y-0">
+          <h2 className="text-xl font-bold text-black">Top Ten Developers</h2>
+          <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-2 w-full md:w-auto">
+            <Input
+              placeholder="Filter emails..."
+              value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+              onChange={(event) =>
+                table.getColumn("email")?.setFilterValue(event.target.value)
+              }
+              className="w-auto md:w-80"
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full md:w-auto">
+                  Columns <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      <div className="rounded-md border overflow-hidden">
+        <Table className="bg-white rounded-md">
+          <TableHeader className="bg-primary text-white">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow className="rounded" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead className="text-white" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -253,7 +330,7 @@ export function DevList() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody >
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -283,10 +360,9 @@ export function DevList() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 pt-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          <span className="text-xs">Click View to see developer profile</span>
         </div>
         <div className="space-x-2">
           <Button

@@ -64,7 +64,7 @@ export function TotalCommits() {
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
-          <CardTitle className="mt-4 mb-1">Contributions</CardTitle>
+          <CardTitle className="text-xl font-semibold text-black mb-1">Contributions</CardTitle>
           <CardDescription>
             Showing total commits by all devs in the last 3 months
           </CardDescription>
@@ -148,7 +148,11 @@ export function TotalCommits() {
             <ChartLegend content={<ChartLegendContent />} />
           </AreaChart>
         </ChartContainer>
+        <div className="text-xs leading-none text-gray-300">
+          Last update 24 hours ago
+        </div>
       </CardContent>
+      
     </Card>
   )
 }
