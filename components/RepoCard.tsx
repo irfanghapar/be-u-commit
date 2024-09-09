@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import { Badge } from "@/components/ui/badge"
 import {
@@ -7,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import Image from 'next/image';
 
 const mockRepos = [
   { name: 'cdx-ios-app', description: 'Repository for iOS Development.', status: 'Active' },
@@ -53,11 +56,13 @@ export function RepoCard({ className, repoCount = 6, ...props }: RepoCardProps) 
           {repos.map((repo, index) => (
             <div key={index} className="flex flex-col justify-between rounded-lg border p-3 lg:p-4">
               <div className="flex items-center space-x-3 lg:space-x-4 mb-2">
-                <img
-                  className="h-8 w-8 rounded-full"
-                  src={`/repo/${(index % 4) + 1}.svg`}
-                  alt=""
-                />
+              <Image
+                className="h-8 w-8 rounded-full"
+                src={`/repo/${(index % 4) + 1}.svg`}
+                alt=""
+                width={32}  // Equivalent to h-8
+                height={32} // Equivalent to w-8
+              />
                 <div className="flex-1">
                   <p className="text-sm font-medium leading-none lg:leading-none break-all lg:break-normal">
                     {repo.name}

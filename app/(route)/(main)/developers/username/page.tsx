@@ -1,6 +1,15 @@
 import React from 'react';
-import { RepoCard } from "@/components/RepoCard"
-import UserCard from "@/components/UserCard"
+import { RepoCard } from "@/components/RepoCard";
+import UserCard from "@/components/UserCard";
+import ActCal from "@/components/ActCal"; // Import the ActCal component
+import activityData from "@/data/act.json";
+import { CommitsAct } from '@/components/chart/CommitsAct';
+
+// Define your theme
+const explicitTheme = {
+  light: ['#e0f2e9', '#b2e3c2', '#80d49c', '#4cc374', '#1fa05e'],
+  dark: ['#e0f2e9', '#b2e3c2', '#80d49c', '#4cc374', '#1fa05e'],
+};
 
 export default function Username() {
   return (
@@ -14,7 +23,21 @@ export default function Username() {
           <RepoCard/>
         </div>
       </div>
-      <h1 className="my-6 text-xl font-bold text-black px-4">Activity Calendar Hello</h1>
+      <div className="bg-white rounded-lg shadow px-4">
+        <h1 className="pt-8 mt-4 mb-4 text-xl font-bold text-black px-4">Activity Calendar</h1>
+        <div className="ml-4 flex justify-center mt-4 mb-4 p-6"> {/* Center the table */}
+          <div className="w-full"> {/* Make sure the table takes full width */}
+            <ActCal
+              data={activityData}
+              theme={explicitTheme}
+              style={{ width: '100%', height: '200px' }} // Full width and appropriate height
+            />
+          </div>
+        </div>
+      </div>
+      <div className='pb-4 mb-4'>
+        <CommitsAct/>
+      </div>
     </div>
   )
 }

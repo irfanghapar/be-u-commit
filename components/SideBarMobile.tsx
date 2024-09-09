@@ -11,7 +11,7 @@ import {
 import { Button } from './ui/button';
 import { LogOut, Menu, MoreHorizontal, Settings, X } from 'lucide-react';
 import Link from 'next/link';
-import { SidebarButtonSheet as SidebarButton } from './SideBarButton';
+import { SidebarButtonSheet as SidebarButton } from './sidebar/SideBarButton';
 import { usePathname } from 'next/navigation';
 import { Separator } from './ui/separator';
 import { Drawer, DrawerContent, DrawerTrigger } from './ui/drawer';

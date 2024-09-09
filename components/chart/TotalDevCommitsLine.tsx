@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { TrendingUp } from "lucide-react"
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts"
+import Image from 'next/image'
 
 import {
   Card,
@@ -59,7 +60,14 @@ export function TotalDevCommitsLine() {
     <Card>
       <CardHeader className="relative">
         <div className="flex">
-          <img className="mr-4 h-12 w-12 rounded-lg" src="/commit.png" alt="" />
+        <div className="mr-4 h-12 w-12 rounded-lg overflow-hidden">
+          <Image
+            src="/commit.png"
+            alt=""
+            width={48}  // h-12 corresponds to 48px
+            height={48} // w-12 corresponds to 48px
+          />
+        </div>
           <div>
           <CardTitle className="text-xl leading-tight">Total Developer Commits</CardTitle>
           <CardDescription className="mt-1 text-xs">January - June 2024</CardDescription>

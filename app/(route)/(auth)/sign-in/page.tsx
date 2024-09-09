@@ -1,4 +1,5 @@
-// This is the sign in page for the app. It will have a form with an email and password input field and a submit button.
+
+
 import Image from "next/image";
 import Link from "next/link";
 

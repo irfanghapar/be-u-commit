@@ -5,6 +5,7 @@ import { TotalDevPie } from "@/components/chart/TotalDevPie";
 import { TotalDevCommitsLine } from "@/components/chart/TotalDevCommitsLine";
 import { TopThreeDev } from "@/components/chart/TopThreeDev";
 import { DevList } from "@/components/table/dev/List";
+import { TopTenTable } from "@/components/table/dev/TopTen";
 
 export default function developer() {
   const handleTimeChange = (timeRange: string) => {
@@ -31,7 +32,7 @@ export default function developer() {
           <TopThreeDev />
         </div>
       </div>
-      <DevList />
+      <TopTenTable />
     </div>
   );
 }

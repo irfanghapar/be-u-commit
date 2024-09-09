@@ -11,7 +11,7 @@ export default function Dashboard() {
         <div className="col-span-2">
           <TotalCommits />
         </div>
-        <div className="col-span-1">
+        <div className="w-full mx-atuo col-span-1">
           <TotalPullReq />
         </div>
       </div>

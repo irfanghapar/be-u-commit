@@ -3,6 +3,7 @@
 import * as React from "react"
 import { TrendingUp, User } from "lucide-react"
 import { Label, Pie, PieChart, Sector } from "recharts"
+import Image from "next/image"
 
 import {
   Card,
@@ -59,7 +60,14 @@ export function TotalDevPie() {
     <Card className="flex w-full h-full">
       <div className="">
         <div className="flex items-center px-4 pt-4 mx-4 mt-2">
-          <img className="mr-4 mt-1 h-12 w-12 rounded-lg" src="/dev_icon.png" alt="" />
+        <div className="mr-4 mt-1 h-12 w-12 rounded-lg overflow-hidden">
+          <Image
+            src="/dev_icon.png"
+            alt=""
+            width={48}   
+            height={48}  
+          />
+        </div>          
           <CardHeader className="p-0 m-0">
             <CardTitle className="text-xl leading-tight">Total Developers</CardTitle>
             <CardDescription className="text-xs">Vendors & Non-Vendors</CardDescription>

@@ -7,10 +7,10 @@ import {
   Settings,
 } from 'lucide-react'; 
 import { SidebarDesktop } from './SideBarDesktop';
-import { SidebarItems } from './types';
+import { SidebarItems } from '../types';
 import { SidebarButton } from './SideBarButton';
 import { useMediaQuery } from 'usehooks-ts';
-import { SidebarMobile } from './SideBarMobile';
+import { SidebarMobile } from '../SideBarMobile';
 
 const sidebarItems: SidebarItems = {
   links: [

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Eye } from "lucide-react"
+import Link from "next/link"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -221,19 +222,19 @@ export const columns: ColumnDef<topTen>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const handleViewProfile = () => {
-        const email = row.getValue("email") as string;
-        const username = email.split('@')[0]; 
-        router.push(`/developers/${username}`);
+        router.push(`/developers/username`);
       };
 
       return (
-        <Button
-          onClick={handleViewProfile}
-          aria-label="View Developer"
-          className="bg-white border hover:bg-primary hover:text-white"
-        ><Eye className="h-4 w-4" /> 
-          <span className="ml-1">View</span> 
-        </Button>
+        <Link href={`/developers/username`}>
+          <Button
+            aria-label="View Developer"
+            className="bg-white border hover:bg-primary hover:text-white"
+          >
+            <Eye className="h-4 w-4" />
+            <span className="ml-1">View</span>
+          </Button>
+        </Link>
       );
     },
     enableSorting: false,
