@@ -31,6 +31,12 @@ const initialChartData = [
   { month: "April", developer: 73 },
   { month: "May", developer: 209 },
   { month: "June", developer: 214 },
+  { month: "July", developer: 10 },
+  { month: "August", developer: 214 },
+  { month: "September", developer: 190 },
+  { month: "October", developer: 209 },
+  { month: "November", developer: 320 },
+  { month: "December", developer: 92 },
 ]
 
 // Dummy function to filter data based on selected time range
@@ -118,13 +124,13 @@ export function TotalDevCommitsLine() {
             <Line
               dataKey="developer"
               type="natural"
-              stroke="var(--color-developer)"
+              stroke="#9224FF"
               strokeWidth={2}
               dot={{
-                fill: "var(--color-developer)",
+                fill: "#9224FF",
               }}
               activeDot={{
-                r: 6,
+                r: 8,
               }}
             >
               <LabelList

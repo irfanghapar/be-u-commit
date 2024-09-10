@@ -275,7 +275,7 @@ export function DevList() {
   return (
     <div className="bg-white shadow-sm rounded-lg p-6 w-full mb-8 border">
         <div className="flex flex-col md:flex-row justify-between md:items-center pt-2 pb-4 space-y-4 md:space-y-0">
-          <h2 className="text-xl font-bold text-black">Top Ten Developers</h2>
+          <h2 className="ml-1 text-xl font-bold text-black">All Developers (325)</h2>
           <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-2 w-full md:w-auto">
             <Input
               placeholder="Filter emails..."

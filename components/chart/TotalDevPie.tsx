@@ -75,7 +75,7 @@ export function TotalDevPie() {
         </div>
         <CardContent className="flex items-left pb-0">
           <div>
-            <div className="mt-20 pt-9 ml-2 flex justify-center mr-4">
+            <div className="mt-20 pt-9 ml-2 flex justify-center">
               <span className="text-4xl font-bold text-left">{totalDeveloper}</span>
               <span className="ml-2 text-muted-foreground text-left">Total</span>
             </div>
@@ -99,12 +99,11 @@ export function TotalDevPie() {
                 nameKey="company"
                 innerRadius={48}
                 strokeWidth={5}
-                // Add the interactivity here
                 activeIndex={activeIndex}
                 activeShape={({ outerRadius = 0, ...props }) => (
                   <g>
                     <Sector {...props} outerRadius={outerRadius + 10} />
-                    <Sector {...props} outerRadius={outerRadius + 25} innerRadius={outerRadius + 12} />
+                    <Sector {...props} outerRadius={outerRadius + 10} innerRadius={outerRadius + 12} />
                   </g>
                 )}
                 onMouseEnter={onPieEnter} // Handle mouse enter event

@@ -22,7 +22,7 @@ export const description = "An interactive bar chart"
 
 const chartConfig = {
   views: {
-    label: "Page Views",
+    label: "Line of Codes",
   },
   addition: {
     label: "Adition (+)",
@@ -48,10 +48,10 @@ export function TopThreeDev() {
 
   return (
     <Card className="border-gray-200 shadow-sm rounded-lg">
-      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0">
+        <div className="flex flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <div className="flex">
-            <img className="mt-1 h-8 w-8 rounded-full" src="/profile.jpeg" alt="" />
+            <img className="w-8 h-8 mt-1 rounded-full" src="/profile.jpeg" alt="Profile Picture" />
             <div className="ml-2 columns-1 align-center">
               <CardTitle className="text-base">Encik Hatta</CardTitle>
               <CardDescription className="text-xs">
@@ -60,14 +60,14 @@ export function TopThreeDev() {
             </div>
           </div>
         </div>
-        <div className="flex">
+        <div className="flex flex-col sm:flex-row sm:space-x-0">
           {["addition", "deletion"].map((key) => {
-            const chart = key as keyof typeof chartConfig
+            const chart = key as keyof typeof chartConfig;
             return (
               <button
                 key={chart}
                 data-active={activeChart === chart}
-                className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+                className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l-0 sm:px-8 sm:py-6"
                 onClick={() => setActiveChart(chart)}
               >
                 <span className="text-xs text-muted-foreground">
@@ -77,7 +77,7 @@ export function TopThreeDev() {
                   {total[key as keyof typeof total].toLocaleString()}
                 </span>
               </button>
-            )
+            );
           })}
         </div>
       </CardHeader>

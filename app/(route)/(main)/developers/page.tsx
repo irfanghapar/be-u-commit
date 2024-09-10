@@ -32,7 +32,7 @@ export default function developer() {
           <TopThreeDev />
         </div>
       </div>
-      <TopTenTable />
+      <DevList />
     </div>
   );
 }

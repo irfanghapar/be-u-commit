@@ -16,6 +16,7 @@ import { usePathname } from 'next/navigation';
 import { Separator } from './ui/separator';
 import { Drawer, DrawerContent, DrawerTrigger } from './ui/drawer';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import Image from 'next/image';
 
 interface SidebarMobileProps {
   sidebarItems: SidebarItems;
