@@ -1,34 +1,27 @@
 "use client"
 
 import * as React from "react"
-import { Eye } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Eye, ArrowUpDown, ChevronDown } from "lucide-react"
 import Link from "next/link"
+import { format } from 'date-fns'
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import { MoreHorizontal } from "lucide-react"
+import { SortingState } from '@tanstack/react-table'
+
 import {
   ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
+  useReactTable,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
+  getFilteredRowModel,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -37,91 +30,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import router from "next/router"
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-const data: topTen[] = [
-  {
-    "id": "m5gr84i9",
-    "progress": 90,
-    "addition": 101,
-    "email": "ken99@yahoo.com",
-    "deletion": 1000
-  },
-  {
-    "id": "3u1reuv4",
-    "progress": 10,
-    "addition": 102,
-    "email": "Abe45@gmail.com",
-    "deletion": 100
-  },
-  {
-    "id": "derv1ws0",
-    "progress": 1,
-    "addition": 103,
-    "email": "Monserrat44@gmail.com",
-    "deletion": 400
-  },
-  {
-    "id": "5kma53ae",
-    "progress": 22,
-    "addition": 104,
-    "email": "Silas22@gmail.com",
-    "deletion": 300
-  },
-  {
-    "id": "bhqecj4p",
-    "progress": 54,
-    "addition": 105,
-    "email": "carmella@hotmail.com",
-    "deletion": 120
-  },
-  {
-    "id": "bhqecj4p",
-    "progress": 54,
-    "addition": 105,
-    "email": "carmella@hotmail.com",
-    "deletion": 120
-  },
-  {
-    "id": "bhqecj4p",
-    "progress": 54,
-    "addition": 105,
-    "email": "carmella@hotmail.com",
-    "deletion": 120
-  },
-  {
-    "id": "bhqecj4p",
-    "progress": 54,
-    "addition": 105,
-    "email": "carmella@hotmail.com",
-    "deletion": 120
-  },
-  {
-    "id": "bhqecj4p",
-    "progress": 54,
-    "addition": 105,
-    "email": "carmella@hotmail.com",
-    "deletion": 120
-  },
-  {
-    "id": "bhqecj4p",
-    "progress": 54,
-    "addition": 105,
-    "email": "carmella@hotmail.com",
-    "deletion": 120
-  }
-]
+import { listDevelopers, Developer } from "@/features/developers/services/listDev";
+import { fetchDeveloperLinesChanges, processLinesChangesData } from "../../services/topTen";
 
-
-export type topTen = {
+export type TopTen = {
   id: string
-  progress: number
-  addition: number
-  deletion: number
   email: string
+  addition: string
+  deletion: string
+  totalCommits: string
+  efficiency: number
+  rawAdded: number
+  rawDeleted: number
 }
 
-export const columns: ColumnDef<topTen>[] = [
+
+
+export const columns: ColumnDef<TopTen>[] = [  
   {
     accessorKey: "No",
     header: "No",
@@ -154,14 +81,22 @@ export const columns: ColumnDef<topTen>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-2 pl-2"
-          >
-          Lines of Code Added
+          className="text-left -ml-6"
+        >
+          Added
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="text-green font-medium">+{row.getValue("addition")}</div>,
+    cell: ({ row }) => {
+      const value = row.getValue("addition") as string;
+      return (
+        <div className="text-green font-medium">
+          {value === '0' ? '0' : `(+) ${value}`}
+        </div>
+      );
+    },
+    sortingFn: (rowA, rowB) => rowA.original.rawAdded - rowB.original.rawAdded,
   },
   {
     accessorKey: "deletion",
@@ -170,52 +105,54 @@ export const columns: ColumnDef<topTen>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-2 pl-2"
+          className="text-left -ml-6"
         >
-          Lines of Code Deleted
+          Deleted
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="text-red font-medium">-{row.getValue("deletion")}</div>,
-  },
-  {
-    accessorKey: "progress",
-    header: () => <div className="text-left">Progress</div>,
     cell: ({ row }) => {
-      const progress = parseFloat(row.getValue("progress"))
-
-      return <div className="text-left pr-0 font-medium">%{progress}</div>
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original
-
+      const value = row.getValue("deletion") as string;
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="text-red font-medium">
+          {value === '0' ? '0' : `(-) ${value}`}
+        </div>
+      );
+    },
+    sortingFn: (rowA, rowB) => rowA.original.rawDeleted - rowB.original.rawDeleted,
+  },
+  {
+    accessorKey: "totalCommits",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left -ml-6"
+        >
+          Total Commits
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       )
     },
+    cell: ({ row }) => <div className="font-medium">{row.getValue("totalCommits")}</div>,
+  },
+  {
+    accessorKey: "efficiency",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left -ml-6"
+        >
+          Efficiency
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => <div className="font-medium">{row.getValue("efficiency")}</div>,
   },
   {
     id: "select",
@@ -243,16 +180,51 @@ export const columns: ColumnDef<topTen>[] = [
 ]
 
 export function TopTenTable() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState([])
+  const [columnVisibility, setColumnVisibility] = useState({})
+  const [rowSelection, setRowSelection] = useState({})
+  const [tableData, setTableData] = useState<TopTen[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const developers = await listDevelopers();
+        const updatedData = await Promise.all(
+          developers.map(async (developer: Developer) => {
+            const linesChanges = await fetchDeveloperLinesChanges(developer.id, selectedDate.getFullYear());
+            const { added, deleted, rawAdded, rawDeleted } = processLinesChangesData(linesChanges, selectedDate);
+            return {
+              id: developer.id,
+              email: developer.email,
+              addition: added,
+              deletion: deleted,
+              totalCommits: '',
+              efficiency: 0,
+              rawAdded,
+              rawDeleted,
+            };
+          })
+        );
+        setTableData(updatedData);
+      } catch (error) {
+        console.error("Error fetching developer data:", error);
+        setError("Failed to fetch developer data. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [selectedDate]);
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -272,17 +244,32 @@ export function TopTenTable() {
 
   return (
     <div className="bg-white shadow-sm rounded-lg p-6 w-full mb-8 border">
-        <div className="flex flex-col md:flex-row justify-between md:items-center pt-2 pb-4 space-y-4 md:space-y-0">
-          <h2 className="text-xl font-bold text-black">Top Ten Developers</h2>
-          <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-2 w-full md:w-auto">
-            <Input
-              placeholder="Filter emails..."
-              value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn("email")?.setFilterValue(event.target.value)
-              }
-              className="w-auto md:w-80"
-            />
+      <div className="flex flex-col md:flex-row justify-between md:items-center pt-2 pb-4 space-y-4 md:space-y-0">
+        <h2 className="text-xl font-bold text-black">Top Ten Developers</h2>
+        <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-2 w-full md:w-auto">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline">
+                {format(selectedDate, "PPP")}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => date && setSelectedDate(date)}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          <Input
+            placeholder="Filter emails..."
+            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("email")?.setFilterValue(event.target.value)
+            }
+            className="w-auto md:w-80"
+          />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-full md:w-auto">
@@ -331,8 +318,14 @@ export function TopTenTable() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody >
-            {table.getRowModel().rows?.length ? (
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -340,10 +333,7 @@ export function TopTenTable() {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
