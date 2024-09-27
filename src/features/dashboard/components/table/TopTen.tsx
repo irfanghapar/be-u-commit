@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal } from "lucide-react"
+import { SortingState } from '@tanstack/react-table'
 
 import {
   ColumnDef,
@@ -41,21 +42,13 @@ export type TopTen = {
   deletion: string
   totalCommits: string
   efficiency: number
-}
-
-export type topTen = {
-  id: string
-  totalCommits: number
-  addition: number
-  deletion: number
-  email: string
-  efficiency: number
+  rawAdded: number
+  rawDeleted: number
 }
 
 
 
-export const columns: ColumnDef<topTen>[] = [
-  
+export const columns: ColumnDef<TopTen>[] = [  
   {
     accessorKey: "No",
     header: "No",
@@ -88,14 +81,22 @@ export const columns: ColumnDef<topTen>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-2 pl-2"
+          className="text-left -ml-6"
         >
           Added
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="text-green font-medium">{row.getValue("addition")}</div>,
+    cell: ({ row }) => {
+      const value = row.getValue("addition") as string;
+      return (
+        <div className="text-green font-medium">
+          {value === '0' ? '0' : `(+) ${value}`}
+        </div>
+      );
+    },
+    sortingFn: (rowA, rowB) => rowA.original.rawAdded - rowB.original.rawAdded,
   },
   {
     accessorKey: "deletion",
@@ -104,14 +105,22 @@ export const columns: ColumnDef<topTen>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-2 pl-2"
+          className="text-left -ml-6"
         >
           Deleted
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="text-red font-medium">{row.getValue("deletion")}</div>,
+    cell: ({ row }) => {
+      const value = row.getValue("deletion") as string;
+      return (
+        <div className="text-red font-medium">
+          {value === '0' ? '0' : `(-) ${value}`}
+        </div>
+      );
+    },
+    sortingFn: (rowA, rowB) => rowA.original.rawDeleted - rowB.original.rawDeleted,
   },
   {
     accessorKey: "totalCommits",
@@ -120,7 +129,7 @@ export const columns: ColumnDef<topTen>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-2 pl-2"
+          className="text-left -ml-6"
         >
           Total Commits
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -131,37 +140,19 @@ export const columns: ColumnDef<topTen>[] = [
   },
   {
     accessorKey: "efficiency",
-    header: "Efficiency",
-    cell: ({ row }) => <div className="font-medium">-</div>,
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original
-
+    header: ({ column }) => {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="text-left -ml-6"
+        >
+          Efficiency
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       )
     },
+    cell: ({ row }) => <div className="font-medium">{row.getValue("efficiency")}</div>,
   },
   {
     id: "select",
@@ -189,7 +180,7 @@ export const columns: ColumnDef<topTen>[] = [
 ]
 
 export function TopTenTable() {
-  const [sorting, setSorting] = useState([])
+  const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState([])
   const [columnVisibility, setColumnVisibility] = useState({})
   const [rowSelection, setRowSelection] = useState({})
@@ -220,8 +211,7 @@ export function TopTenTable() {
             };
           })
         );
-        const filteredData = updatedData.filter(data => data.rawAdded > 0 || data.rawDeleted > 0);
-        setTableData(filteredData);
+        setTableData(updatedData);
       } catch (error) {
         console.error("Error fetching developer data:", error);
         setError("Failed to fetch developer data. Please try again later.");
@@ -329,7 +319,13 @@ export function TopTenTable() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -337,13 +333,7 @@ export function TopTenTable() {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {cell.column.id === 'addition' || cell.column.id === 'deletion' ? (
-                        <div className={`font-medium ${cell.column.id === 'addition' ? 'text-green' : 'text-red'}`}>
-                          {cell.getValue()}
-                        </div>
-                      ) : (
-                        flexRender(cell.column.columnDef.cell, cell.getContext())
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>

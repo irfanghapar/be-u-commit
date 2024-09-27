@@ -22,7 +22,7 @@ import {
 import { SelectYear } from "@/components/chart/SelectYear"
 import { SelectMonth } from "@/components/chart/SelectMonth"
 import { fetchTotalDeveloperCommits } from "@/features/developers/services/totalDevCommits"
-import { processCommitData } from "@/features/developers/services/process"
+import { processCommitData } from "@/features/developers/services/processCommit"
 
 export const description = "A line chart with a label"
 
