@@ -3,35 +3,51 @@
 import * as React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const months = [
-  { value: "all", label: "All Months" },
-  { value: "0", label: "January" },
-  { value: "1", label: "February" },
-  { value: "2", label: "March" },
-  { value: "3", label: "April" },
-  { value: "4", label: "May" },
-  { value: "5", label: "June" },
-  { value: "6", label: "July" },
-  { value: "7", label: "August" },
-  { value: "8", label: "September" },
-  { value: "9", label: "October" },
-  { value: "10", label: "November" },
-  { value: "11", label: "December" },
-];
+interface SelectMonthProps {
+  onChange: (value: string) => void
+  selectedMonth: string
+  includeAllOption?: boolean
+  includeTodayAndWeek?: boolean
+}
 
-export function SelectMonth({ onChange, selectedMonth }: { onChange: (value: string) => void, selectedMonth: string }) {
+export function SelectMonth({ onChange, selectedMonth, includeAllOption = false, includeTodayAndWeek = false }: SelectMonthProps) {
+  const months = [
+    { value: "01", label: "January" },
+    { value: "02", label: "February" },
+    { value: "03", label: "March" },
+    { value: "04", label: "April" },
+    { value: "05", label: "May" },
+    { value: "06", label: "June" },
+    { value: "07", label: "July" },
+    { value: "08", label: "August" },
+    { value: "09", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ]
+
+  const additionalOptions = [
+    ...(includeAllOption ? [{ value: "all", label: "All Months" }] : []),
+    ...(includeTodayAndWeek ? [
+      { value: "today", label: "Today" },
+      { value: "7days", label: "Last 7 Days" },
+    ] : []),
+  ]
+
+  const allOptions = [...additionalOptions, ...months]
+
   return (
     <Select onValueChange={onChange} value={selectedMonth}>
-      <SelectTrigger className="w-[140px]">
-        <SelectValue placeholder="Select Month" />
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select month" />
       </SelectTrigger>
       <SelectContent>
-        {months.map((month) => (
-          <SelectItem key={month.value} value={month.value}>
-            {month.label}
+        {allOptions.map((option) => (
+          <SelectItem key={option.value} value={option.value}>
+            {option.label}
           </SelectItem>
         ))}
       </SelectContent>
     </Select>
-  );
+  )
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { TrendingUp } from "lucide-react"
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts"
+import { CartesianGrid, LabelList, Line, LineChart, XAxis, YAxis } from "recharts"
 import Image from 'next/image'
 
 import {
@@ -33,12 +33,23 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
+const calculateYAxisDomain = (data: any[]) => {
+  if (data.length === 0) return [0, 10];
+
+  const values = data.map(item => item.developer);
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+
+  const padding = (maxValue - minValue) * 0.1;
+  return [Math.max(0, minValue - padding), maxValue + padding];
+};
+
 export function TotalDevCommitsLine() {
   const currentYear = new Date().getFullYear()
   const [selectedYear, setSelectedYear] = useState(currentYear)
   const [selectedMonth, setSelectedMonth] = useState("all")
   const [rawData, setRawData] = useState([])
-  const [chartData, setChartData] = useState([])
+  const [chartData, setChartData] = useState<Array<{ label: string; developer: number }>>([]);
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -96,8 +107,8 @@ export function TotalDevCommitsLine() {
 
   return (
     <Card>
-      <CardHeader className="relative">
-        <div className="flex">
+      <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+        <div className="flex items-start mb-4 sm:mb-0">
           <div className="mr-4 h-12 w-12 rounded-lg overflow-hidden">
             <Image
               src="/commit.png"
@@ -115,55 +126,66 @@ export function TotalDevCommitsLine() {
             </CardDescription>
           </div>
         </div>
-        <div className="absolute top-2 right-2 pt-2 pr-4 flex space-x-2">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
           <SelectYear onChange={handleYearChange} selectedYear={selectedYear} />
           <SelectMonth onChange={handleMonthChange} selectedMonth={selectedMonth} />
         </div>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="aspect-auto h-[200px] w-full">
-          <LineChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              top: 20,
-              left: 12,
-              right: 12,
+      <CardContent className="">
+      <ChartContainer config={chartConfig} className="aspect-auto h-[200px] w-full">
+        <LineChart
+          accessibilityLayer
+          data={chartData}
+          margin={{
+            top: 20,
+            left: 0,
+            right: 12,
+            bottom: 20, // Add some bottom margin for X-axis labels
+          }}
+        >
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="label"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            tickFormatter={formatXAxisTick}
+          />
+          <YAxis
+            domain={calculateYAxisDomain(chartData)}
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={(value) => Math.round(value).toString()}
+            tick={{ dx: 0 }} 
+            width={30}  // Adjust this value to fine-tune the space for Y-axis labels
+          />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent indicator="line" />}
+          />
+          <Line
+            dataKey="developer"
+            type="monotone" // Changed from "natural" for smoother curves
+            stroke="#9224FF"
+            strokeWidth={2}
+            dot={{
+              fill: "#9224FF",
+              r: 4, // Reduced dot size for better aesthetics
+            }}
+            activeDot={{
+              r: 6,
             }}
           >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={formatXAxisTick}
+            <LabelList
+              position="top"
+              offset={12}
+              className="fill-foreground"
+              fontSize={10} // Reduced font size for labels
+              formatter={(value) => Math.round(value)} // Round label values
             />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Line
-              dataKey="developer"
-              type="natural"
-              stroke="#9224FF"
-              strokeWidth={2}
-              dot={{
-                fill: "#9224FF",
-              }}
-              activeDot={{
-                r: 8,
-              }}
-            >
-              <LabelList
-                position="top"
-                offset={12}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Line>
-          </LineChart>
-        </ChartContainer>
+          </Line>
+        </LineChart>
+      </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">

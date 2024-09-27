@@ -9,7 +9,7 @@ const years = Array.from({length: 5}, (_, i) => currentYear - i);
 export function SelectYear({ onChange, selectedYear }: { onChange: (value: number) => void, selectedYear: number }) {
   return (
     <Select onValueChange={(value) => onChange(Number(value))} value={selectedYear.toString()}>
-      <SelectTrigger className="w-[100px]">
+      <SelectTrigger className="w-full sm:w-[100px]">
         <SelectValue placeholder="Select Year" />
       </SelectTrigger>
       <SelectContent>
