@@ -34,6 +34,8 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 
 import { listDevelopers, Developer } from "@/features/developers/services/listDev";
 import { fetchDeveloperLinesChanges, processLinesChangesData } from "../../services/topTen";
+import { fetchDeveloperCommits, processTotalCommits } from "../../services/commitCount";
+
 
 export type TopTen = {
   id: string
@@ -91,7 +93,7 @@ export const columns: ColumnDef<TopTen>[] = [
     cell: ({ row }) => {
       const value = row.getValue("addition") as string;
       return (
-        <div className="text-green font-medium">
+        <div className="text-darkGreen font-medium">
           {value === '0' ? '0' : `(+) ${value}`}
         </div>
       );
@@ -199,12 +201,19 @@ export function TopTenTable() {
           developers.map(async (developer: Developer) => {
             const linesChanges = await fetchDeveloperLinesChanges(developer.id, selectedDate.getFullYear());
             const { added, deleted, rawAdded, rawDeleted } = processLinesChangesData(linesChanges, selectedDate);
+            
+            // Ensure we're using the correct date when fetching commits
+            const commits = await fetchDeveloperCommits(developer.id, selectedDate);
+            const totalCommits = processTotalCommits(commits, selectedDate);
+  
+            console.log(`Developer ${developer.email} - Date: ${selectedDate.toISOString().split('T')[0]}, Commits: ${totalCommits}`);
+  
             return {
               id: developer.id,
               email: developer.email,
               addition: added,
               deletion: deleted,
-              totalCommits: '',
+              totalCommits: totalCommits.toString(),
               efficiency: 0,
               rawAdded,
               rawDeleted,
@@ -219,7 +228,7 @@ export function TopTenTable() {
         setIsLoading(false);
       }
     };
-
+  
     fetchData();
   }, [selectedDate]);
 

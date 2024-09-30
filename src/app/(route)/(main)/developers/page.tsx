@@ -4,7 +4,7 @@ import { SelectTime } from "@/components/chart/SelectTime";
 import { TotalDevPie } from "@/features/developers/components/chart/TotalDevPie";
 import { TotalDevCommitsLine } from "@/features/developers/components/chart/TotalDevCommitsLine";
 import { TopThreeDev } from "@/features/developers/components/chart/TopThreeDev";
-import { DevList } from "@/features/developers/components/table/List";
+import { TopTenTable } from "@/features/dashboard/components/table/TopTen";
 
 export default function developer() {
   const handleTimeChange = (timeRange: string) => {
@@ -31,7 +31,7 @@ export default function developer() {
           <TopThreeDev />
         </div>
       </div>
-      <DevList />
+      <TopTenTable />
     </div>
   );
 }
