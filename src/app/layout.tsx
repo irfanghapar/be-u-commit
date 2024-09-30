@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/sidebar/SideBarNav";
-import { ClientLayout } from "@/components/sidebar/ClientLayout"; // Import a new client-side layout
+import { ClientLayout } from "@/components/sidebar/ClientLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`bg-gray-50 ${inter.className}`}>
-        <ClientLayout>{children}</ClientLayout> {/* Wrap in the client layout */}
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

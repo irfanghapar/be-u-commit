@@ -1,15 +1,27 @@
-import React from 'react';
+"use client";
 
-export default function UserCard() {
+import React from 'react';
+import { Developer } from '@/features/developers/services/listDev';
+import ClientAvatar from './ClientAvatar';
+
+interface UserCardProps {
+  developer: Developer;
+}
+
+export default function UserCard({ developer }: UserCardProps) {
+
   return (
     <div className="w-full h-full">
       <div className="rounded-lg border bg-white px-4 pt-8 shadow-sm h-full flex flex-col justify-between">
         <div>
           <div className="relative mx-auto w-36 rounded-lg">
-            <img className="mx-auto h-auto w-full rounded-full" src="/profile.jpeg" alt="" />
+          <ClientAvatar />
           </div>
-          <h1 className="mt-2 my-1 text-center text-xl font-bold leading-8 text-black">Encik Hatta (Keris)</h1>
-          <h4 className="text-sm text-center leading-6 text-primary hover:text-secondary">Spring Boot Developer</h4>
+          <h1 className="mt-2 my-1 text-center text-xl font-bold leading-8 text-black">
+            {developer.email.split('@')[0].split(/[-_.]/).map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+          </h1>
+          <h4 className="text-sm text-center leading-6 text-primary hover:text-secondary">Developer</h4>
         </div>
         <ul className="divide-y rounded bg-white-800 my-2 px-3 text-gray-600 hover:text-black">
           <li className="flex items-center py-3 text-sm">

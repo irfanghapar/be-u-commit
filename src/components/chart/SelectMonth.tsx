@@ -4,13 +4,14 @@ import * as React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface SelectMonthProps {
-  onChange: (value: string) => void
-  selectedMonth: string
-  includeAllOption?: boolean
-  includeTodayAndWeek?: boolean
+  onChange: (value: string) => void;
+  selectedMonth: string;
+  includeAllOption?: boolean;
+  includeTodayAndWeek?: boolean;
+  className?: string; // Add this line
 }
 
-export function SelectMonth({ onChange, selectedMonth, includeAllOption = false, includeTodayAndWeek = false }: SelectMonthProps) {
+export function SelectMonth({ onChange, selectedMonth, includeAllOption = false, includeTodayAndWeek = false, className }: SelectMonthProps) {
   const months = [
     { value: "01", label: "January" },
     { value: "02", label: "February" },
@@ -38,7 +39,7 @@ export function SelectMonth({ onChange, selectedMonth, includeAllOption = false,
 
   return (
     <Select onValueChange={onChange} value={selectedMonth}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className={`w-[180px] ${className}`}> {/* Update this line */}
         <SelectValue placeholder="Select month" />
       </SelectTrigger>
       <SelectContent>

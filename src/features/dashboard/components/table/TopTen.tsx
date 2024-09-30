@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal } from "lucide-react"
 import { SortingState } from '@tanstack/react-table'
+import { useRouter } from 'next/navigation'; // Add this import
 
 import {
   ColumnDef,
@@ -48,139 +49,6 @@ export type TopTen = {
   rawDeleted: number
 }
 
-
-
-export const columns: ColumnDef<TopTen>[] = [  
-  {
-    accessorKey: "No",
-    header: "No",
-    cell: ({ row }) => {
-      // Get the index of the row and format it
-      const index = row.index + 1;
-      return <div>{index.toString().padStart(2, '0')}</div>;
-    },
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-2 pl-2"
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "addition",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-6"
-        >
-          Added
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const value = row.getValue("addition") as string;
-      return (
-        <div className="text-darkGreen font-medium">
-          {value === '0' ? '0' : `(+) ${value}`}
-        </div>
-      );
-    },
-    sortingFn: (rowA, rowB) => rowA.original.rawAdded - rowB.original.rawAdded,
-  },
-  {
-    accessorKey: "deletion",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-6"
-        >
-          Deleted
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const value = row.getValue("deletion") as string;
-      return (
-        <div className="text-red font-medium">
-          {value === '0' ? '0' : `(-) ${value}`}
-        </div>
-      );
-    },
-    sortingFn: (rowA, rowB) => rowA.original.rawDeleted - rowB.original.rawDeleted,
-  },
-  {
-    accessorKey: "totalCommits",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-6"
-        >
-          Total Commits
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("totalCommits")}</div>,
-  },
-  {
-    accessorKey: "efficiency",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="text-left -ml-6"
-        >
-          Efficiency
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("efficiency")}</div>,
-  },
-  {
-    id: "select",
-    header: "Actions",
-    cell: ({ row }) => {
-      const handleViewProfile = () => {
-        router.push(`/developers/username`);
-      };
-
-      return (
-        <Link href={`/developers/username`}>
-          <Button
-            aria-label="View Developer"
-            className="bg-white border hover:bg-primary hover:text-white"
-          >
-            <Eye className="h-4 w-4" />
-            <span className="ml-1">View</span>
-          </Button>
-        </Link>
-      );
-    },
-    enableSorting: false,
-    enableHiding: false,
-  },
-]
-
 export function TopTenTable() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState([])
@@ -190,6 +58,139 @@ export function TopTenTable() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+
+  const columns: ColumnDef<TopTen>[] = [  
+    {
+      accessorKey: "No",
+      header: "No",
+      cell: ({ row }) => {
+        // Get the index of the row and format it
+        const index = row.index + 1;
+        return <div>{index.toString().padStart(2, '0')}</div>;
+      },
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="text-left -ml-2 pl-2"
+          >
+            Email
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    },
+    {
+      accessorKey: "addition",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="text-left -ml-6"
+          >
+            Added
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => {
+        const value = row.getValue("addition") as string;
+        return (
+          <div className="text-darkGreen font-medium">
+            {value === '0' ? '0' : `(+) ${value}`}
+          </div>
+        );
+      },
+      sortingFn: (rowA, rowB) => rowA.original.rawAdded - rowB.original.rawAdded,
+    },
+    {
+      accessorKey: "deletion",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="text-left -ml-6"
+          >
+            Deleted
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => {
+        const value = row.getValue("deletion") as string;
+        return (
+          <div className="text-red font-medium">
+            {value === '0' ? '0' : `(-) ${value}`}
+          </div>
+        );
+      },
+      sortingFn: (rowA, rowB) => rowA.original.rawDeleted - rowB.original.rawDeleted,
+    },
+    {
+      accessorKey: "totalCommits",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="text-left -ml-6"
+          >
+            Total Commits
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="font-medium">{row.getValue("totalCommits")}</div>,
+    },
+    {
+      accessorKey: "efficiency",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="text-left -ml-6"
+          >
+            Efficiency
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="font-medium">{row.getValue("efficiency")}</div>,
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const router = useRouter();
+        const username = row.original.email.split('@')[0];
+    
+        const handleViewProfile = () => {
+          router.push(`/developers/${username}`);
+        };
+    
+        return (
+          <Button
+            onClick={handleViewProfile}
+            aria-label="View Developer"
+            className="bg-white border hover:bg-primary hover:text-white"
+          >
+            <Eye className="h-4 w-4" />
+            <span className="ml-1">View</span>
+          </Button>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+    },
+  ]
 
   useEffect(() => {
     const fetchData = async () => {
